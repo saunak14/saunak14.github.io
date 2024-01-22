@@ -1,0 +1,223 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.header{
+    display: flex;
+    position: fixed;
+    padding: 30px 50px;
+    width: 94%;
+    background-color: white;
+    z-index: 1;
+}
+
+.main-events-header{
+    margin-right: auto;
+    margin-left: 40px;
+    font-weight: bold;
+}
+
+nav{
+    display: flex;
+    margin-left: auto;
+}
+
+nav a{
+    margin-left: 40px;
+    text-decoration: none;
+    color: black;
+}
+
+.color-gold{
+    color: #AF9453;
+}
+
+.font-playfair{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.banner{
+    background-attachment: fixed;
+    background-size: cover;
+    position: relative;
+    width: 100%;
+}
+
+.welcome-msg{
+    position:absolute;
+    text-align: center;
+    left: 0; 
+    right: 0;
+    top: 170px;
+    margin-left: auto; 
+    margin-right: auto;
+    width: 700px;
+}
+
+.welcome-msg p{
+    color: white;
+    background-color: transparent;
+    font-size: 40px;
+    letter-spacing: 0.30em;
+    line-height: 1.5em;
+}
+
+.top{
+    height: 87vh;
+    background-image: url(imgs/image3.png);
+}
+
+.services-section{
+    display: flex;
+    margin: 50px;
+    color: white;
+}
+
+.services{
+    position: relative;
+    background-image: url(imgs/flower.png);
+    margin-right: auto;
+    width: 35%;
+    height: 582px;
+}
+
+.services-heading{
+    position: absolute;
+    text-align: center;
+    top: 130px;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    letter-spacing: 0.45em;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.services-text{
+    position: absolute;
+    top: 280px;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    letter-spacing: 0.2em;
+    line-height: 1.8em;
+}
+
+.services-discover-btn{
+    position: absolute;
+    top: 430px;
+    left:0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    border: 1px solid white;
+    display: inline-block;
+    padding: 12px 12px;
+    width: 50%;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.event-img{
+    margin-left: auto;
+}
+
+.reviews{
+    margin: 100px 35px;
+    text-align: center;
+}
+
+.quotation-mark{
+    height: 3%;
+    width: 3%;
+}
+
+.comments{
+    display: flex;
+    margin: 20px;
+}
+
+.comments p{
+    letter-spacing: 0.15em;
+    line-height: 1.8em;
+    font-size: 20px;
+}
+
+.arrow{
+    height: 3%;
+    width: 3%;
+}
+
+.arrow-left{
+    margin-right: auto;
+}
+
+.arrow-right{
+    margin-left: auto;
+}
+
+.people{
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.bottom{
+    height:67vh;
+    background-image: url(imgs/image2.png);
+    margin: 0 40px;
+    width: 93%;
+}
+
+.gallery{
+    color: white;
+    height: 87%;
+    width: 34%;
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    font-weight: bold;
+}
+
+.gallery-discover-btn{
+    top: 356px;
+}
+
+.footer{
+    display: flex;
+    margin: 50px;
+    padding: 60px 70px;
+    background-color: #AF9453;
+    color: white;
+    font-weight: 550;
+}
+
+.address{
+    padding-right: 20px;
+    border-right: 1px solid white;
+}
+
+.contact-info{
+    padding-left: 20px;
+    padding-right: 20px;
+    border-right: 1px solid white;
+}
+
+.copyright{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.consultation-btn{
+    margin-top: 15px;
+    margin-left: 200px;
+    border: 1px solid white;
+    padding: 10px;
+}

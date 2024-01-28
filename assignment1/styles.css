@@ -29,6 +29,10 @@ nav a{
     color: black;
 }
 
+nav a:hover{
+    color: #AF9453;
+}
+
 .color-gold{
     color: #AF9453;
 }

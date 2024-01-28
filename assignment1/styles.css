@@ -7,7 +7,7 @@ body{
     display: flex;
     position: fixed;
     padding: 30px 50px;
-    width: 94%;
+    width: 1175px;
     background-color: white;
     z-index: 1;
 }
@@ -48,7 +48,8 @@ nav a:hover{
     background-attachment: fixed;
     background-size: cover;
     position: relative;
-    width: 100%;
+    width: 1239px;
+    background-size: 1239px 800px;
 }
 
 .welcome-msg{
@@ -78,6 +79,7 @@ nav a:hover{
 .services-section{
     display: flex;
     margin: 50px;
+    width: 1140px;
     color: white;
 }
 
@@ -135,6 +137,7 @@ nav a:hover{
 }
 
 .reviews{
+    width: 1160px;
     margin: 100px 35px;
     text-align: center;
 }
@@ -177,12 +180,12 @@ nav a:hover{
     height:67vh;
     background-image: url(imgs/image2.png);
     margin: 0 40px;
-    width: 93%;
+    width: 1160px;
 }
 
 .gallery{
     color: white;
-    height: 87%;
+    height: 91%;
     width: 34%;
     position: absolute;
     top: 30px;
@@ -192,6 +195,10 @@ nav a:hover{
 
 .gallery-discover-btn{
     top: 356px;
+}
+
+.gallery-heading{
+    top: 100px;
 }
 
 .footer{

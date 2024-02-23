@@ -6,9 +6,165 @@ function sendData() {
   url.searchParams.set("stock", name);
 
   fetch(url.toString(), { method: "GET" })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-      document.getElementById("response").innerHTML = data;
+      if (data.error_page) {
+        var template = `
+        <main class="error-container">
+        <div class="error">
+            Error : No record has been found, please enter a valid symbol
+        </div>
+    </main>
+        `
+      }
+      else {
+        var template = `
+      <nav class="nav-buttons">
+        <button class="nav-button active" id="company-nav">Company</button>
+        <button class="nav-button" id="stock-summary-nav">Stock Summary</button>
+        <button class="nav-button" id="charts-nav">Charts</button>
+        <button class="nav-button" id="latest-news-nav">Latest News</button>
+    </nav>
+
+    <main class="company content-div" id="company">
+        <div class="logo">
+            <img src="${data.logo}" alt="">
+        </div>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="table-key top-row">Company Name</td>
+                    <td class="table-value top-row">${data.name}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Stock Ticker Symbol</td>
+                    <td class="table-value">${data.ticker}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Stock Exchange Code</td>
+                    <td class="table-value">${data.exchange}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Company Start Date</td>
+                    <td class="table-value">${data.ipo}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Category</td>
+                    <td class="table-value">${data.finnhubIndustry}</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+     <main class="stock-summary content-div hidden" id="stock-summary">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="table-key top-row">Stock Ticker Symbol</td>
+                    <td class="table-value top-row">${data.ticker}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Trading Day</td>
+                    <td class="table-value">${data.date}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Previous Closing Price</td>
+                    <td class="table-value">${data.pc}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Opening Price</td>
+                    <td class="table-value">${data.o}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">High Price</td>
+                    <td class="table-value">${data.h}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Low Price</td>
+                    <td class="table-value">${data.l}</td>
+                </tr>
+                <tr>
+                    <td class="table-key">Change</td>
+                    <td class="table-value">${data.d}
+      `
+      if(data.d < 0) {
+        template = template + `
+        <img class="arrow" src="/static/imgs/RedArrowDown.png" alt="">
+        `
+      }
+      else {
+        template = template + `
+        <img class="arrow" src="/static/imgs/GreenArrowUp.png" alt="">
+        `
+      }
+
+      template = template + `
+      </td>
+                </tr>
+                <tr>
+                    <td class="table-key">Change Percent</td>
+                    <td class="table-value">${data.dp}
+      `
+      if(data.d < 0) {
+        template = template + `
+        <img class="arrow" src="/static/imgs/RedArrowDown.png" alt="">
+        `
+      }
+      else {
+        template = template + `
+        <img class="arrow" src="/static/imgs/GreenArrowUp.png" alt="">
+        `
+      }
+
+      template = template + `
+      </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <section class="recommendation-trends-container">
+            <div class="recommendation-trends">
+                <div class="strong-sell-text">Strong Sell</div>
+                <div class="recommendation-number strong-sell">${data.strongSell}</div>
+                <div class="recommendation-number sell">${data.sell}</div>
+                <div class="recommendation-number hold">${data.hold}</div>
+                <div class="recommendation-number buy">${data.buy}</div>
+                <div class="recommendation-number strong-buy">${data.strongBuy}</div>
+                <div class="strong-buy-text">Strong Buy</div>
+            </div>
+
+            <div class="recommendation-trends-text">Recommendation Trends</div>
+        </section>
+    </main>
+
+    <main class="charts content-div hidden" id="charts">
+        <div id="chart-content" class="chart-content"></div>
+    </main>
+
+    <main class="latest-news content-div hidden" id="latest-news">
+        <div id="latest-news-content" class="latest-news-content">
+      `
+
+      for(const news of data.company_news) {
+        template = template + `
+        <div class="news-block">
+                    <div class="news-image-container"><img src="${news.image}" alt="" class="news-image"></div>
+                    <div class="news-content">
+                        <div class="news-lines"><b>${news.headline}</b></div>
+                        <div class="news-lines">${news.date}</div>
+                        <div class="news-lines"><a href="${news.url}" target="_blank">See Original Post</a></div>
+                    </div>
+                </div>
+        `
+      }
+
+      template = template + `
+      </div>
+    </main>
+      `
+      }
+      
+      document.getElementById("response").innerHTML = template;
       addEventListeners();
       fetchChartData(name);
     })

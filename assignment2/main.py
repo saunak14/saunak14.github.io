@@ -30,13 +30,8 @@ def handle_form():
     if response.status_code == 200:
        data = response.json()
        if len(data) == 0:
-          return f"""
-<main class="error-container">
-        <div class="error">
-            Error : No record has been found, please enter a valid symbol
-        </div>
-    </main>          
-"""
+          data["error_page"] = True
+          return data
 
     # Quote API
     finnhub_quote = "/quote"
@@ -82,146 +77,11 @@ def handle_form():
             data_count +=1
             if data_count >=5:
                break
-    template = f"""
-    <nav class="nav-buttons">
-        <button class="nav-button active" id="company-nav">Company</button>
-        <button class="nav-button" id="stock-summary-nav">Stock Summary</button>
-        <button class="nav-button" id="charts-nav">Charts</button>
-        <button class="nav-button" id="latest-news-nav">Latest News</button>
-    </nav>
 
-    <main class="company content-div" id="company">
-        <div class="logo">
-            <img src="{data['logo']}" alt="">
-        </div>
-        <table>
-            <tbody>
-                <tr>
-                    <td class="table-key top-row">Company Name</td>
-                    <td class="table-value top-row">{data['name']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Stock Ticker Symbol</td>
-                    <td class="table-value">{data['ticker']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Stock Exchange Code</td>
-                    <td class="table-value">{data['exchange']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Company Start Date</td>
-                    <td class="table-value">{data['ipo']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Category</td>
-                    <td class="table-value">{data['finnhubIndustry']}</td>
-                </tr>
-            </tbody>
-        </table>
-    </main>
-
-     <main class="stock-summary content-div hidden" id="stock-summary">
-        <table>
-            <tbody>
-                <tr>
-                    <td class="table-key top-row">Stock Ticker Symbol</td>
-                    <td class="table-value top-row">{data['ticker']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Trading Day</td>
-                    <td class="table-value">{data['date']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Previous Closing Price</td>
-                    <td class="table-value">{data['pc']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Opening Price</td>
-                    <td class="table-value">{data['o']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">High Price</td>
-                    <td class="table-value">{data['h']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Low Price</td>
-                    <td class="table-value">{data['l']}</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Change</td>
-                    <td class="table-value">{data['d']}
-    """
-    if data['d'] < 0:
-       template += """
-        <img class="arrow" src="/static/imgs/RedArrowDown.png" alt="">
-    """
-    else:
-       template += """
-        <img class="arrow" src="/static/imgs/GreenArrowUp.png" alt="">
-    """
+    data["company_news"] = company_news
+    data["error_page"] = False
+    return data
     
-    template+= f"""
-</td>
-                </tr>
-                <tr>
-                    <td class="table-key">Change Percent</td>
-                    <td class="table-value">{data['dp']}
-"""
-    if data['d'] < 0:
-       template += """
-        <img class="arrow" src="/static/imgs/RedArrowDown.png" alt="">
-    """
-    else:
-       template += """
-        <img class="arrow" src="/static/imgs/GreenArrowUp.png" alt="">
-    """
-
-    template +=f"""
-</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <section class="recommendation-trends-container">
-            <div class="recommendation-trends">
-                <div class="strong-sell-text">Strong Sell</div>
-                <div class="recommendation-number strong-sell">{data['strongSell']}</div>
-                <div class="recommendation-number sell">{data['sell']}</div>
-                <div class="recommendation-number hold">{data['hold']}</div>
-                <div class="recommendation-number buy">{data['buy']}</div>
-                <div class="recommendation-number strong-buy">{data['strongBuy']}</div>
-                <div class="strong-buy-text">Strong Buy</div>
-            </div>
-
-            <div class="recommendation-trends-text">Recommendation Trends</div>
-        </section>
-    </main>
-
-    <main class="charts content-div hidden" id="charts">
-        <div id="chart-content" class="chart-content"></div>
-    </main>
-
-    <main class="latest-news content-div hidden" id="latest-news">
-        <div id="latest-news-content" class="latest-news-content">
-"""
-    for news in company_news:
-       template += f"""
-<div class="news-block">
-                    <div class="news-image-container"><img src="{news['image']}" alt="" class="news-image"></div>
-                    <div class="news-content">
-                        <div class="news-lines"><b>{news['headline']}</b></div>
-                        <div class="news-lines">{news['date']}</div>
-                        <div class="news-lines"><a href="{news['url']}" target="_blank">See Original Post</a></div>
-                    </div>
-                </div>       
-"""
-    template += """
-</div>
-    </main>
-"""
-    return template
-    # return render_template("stock-info.html", error_page = False, data=data, company_news=company_news)
-  
 @app.route('/getGraph', methods=['GET'])
 def get_graph():
    name = request.args.get('stock')

@@ -19,9 +19,11 @@ body {
 }
 
 .heading {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
   font-size: 30px;
-  font-weight: lighter;
   text-align: center;
   padding-top: 30px;
   padding-bottom: 30px;

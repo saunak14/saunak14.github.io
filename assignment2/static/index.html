@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <title>Assignment 2</title>
+  <link type="text/css" rel="stylesheet" href="/static/style.css">
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+</head>
+<body>
+  <section class="stock-search">
+    <div class="heading">Stock Search</div>
+    <form onsubmit="sendData()">
+      <div class="stock-search-bar">
+        <button type="submit" class="button search-icon"><img src="/static/imgs/search-solid.svg" alt=""></button>
+        <input type="text" id="stock" class="stock-input" name="stock" placeholder="Enter Stock Ticker Symbol" required>
+        <button type="button" onclick="clearInput()" class="button cancel-icon"><img src="/static/imgs/times-solid.svg" alt=""></button>
+      </div>
+    </form>
+  </section>
+  <div class="response" id="response"><!-- Will contains the stock-info.html after button is clicked --></div>
+  <script src="/static/script.js"></script>
+</body>
+</html>

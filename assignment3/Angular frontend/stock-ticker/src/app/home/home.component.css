@@ -1,0 +1,29 @@
+#title {
+    font-size: 5em;
+    font-weight: bolder;
+    line-height: 1em;
+}
+
+input {
+    outline: none !important;
+    border:2px solid #6f4ffb;
+    border-radius: 20px;
+    border-right: none;
+    outline:0px !important;
+    box-shadow: none;
+
+}
+
+input:focus {
+    outline:0px !important;
+    -webkit-appearance:none;
+    border:2px solid #6f4ffb;
+    border-right: none;
+    box-shadow: none;
+}
+
+.icon {
+    border-radius: 20px;
+    border:2px solid #6f4ffb;
+    border-left: none;
+}

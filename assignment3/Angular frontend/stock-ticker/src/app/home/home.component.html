@@ -1,0 +1,47 @@
+<div class="container">
+    <div class="row text-center justify-content-center">
+        
+        <div class="col-12 pt-5 mt-5 mb-3">
+           <h1 id="title">STOCK SEARCH</h1>
+            
+            <div class="form-group row text-center justify-content-center mt-5 search">
+
+                <div class="mw-40">
+                    
+
+                  <div class="input-group">
+
+                    <input class="form-control" id="ex3" type="text" matInput [matAutocomplete]="auto" [formControl]="queryField" placeholder="Enter stock ticker symbol">
+                        <div class="input-group-append">
+                            <div class="input-group-text bg-transparent icon"  >
+                        <fa-icon [icon]="faS" [styles]="{'stroke': '#6f4ffb', 'color': '#6f4ffb'}" pull="right" routerLink="/details/{{ ticker }}"></fa-icon>
+                        <mat-autocomplete #auto="matAutocomplete">
+                          
+                          <div *ngIf="isLoading">
+                          <mat-option>
+                          <mat-progress-spinner style="margin:0 auto;"
+                           diameter="40"
+                           mode="indeterminate">
+                         </mat-progress-spinner>
+                        </mat-option>
+                        </div>
+                         <div *ngIf="!isLoading">
+      
+                          <mat-option *ngFor="let result of results" [value]="result" (click)="selectResult(result)">
+                            {{result.displaySymbol}} | {{result.description}}
+                          </mat-option>
+                        </div>
+
+                        </mat-autocomplete>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+        </div>
+        
+        
+    </div>
+    
+</div>

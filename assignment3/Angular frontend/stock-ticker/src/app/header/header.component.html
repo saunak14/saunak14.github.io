@@ -1,0 +1,18 @@
+<nav class="navbar sticky-top navbar-inverse navbar-expand-lg">
+    <span class="navbar-brand" (click)="backtoHome()">Stock Search</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="menu-i nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Search</a>
+          </li>
+          <li class="nav-item">
+            <a class="menu-i nav-link" routerLink="/watchlist" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Watchlist</a>
+          </li>
+          <li class="nav-item">
+            <a class="menu-i nav-link" routerLink="/portfolio" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Portfolio</a>
+          </li>
+        </ul></div>
+</nav>

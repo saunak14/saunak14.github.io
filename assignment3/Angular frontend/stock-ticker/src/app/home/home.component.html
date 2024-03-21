@@ -11,10 +11,11 @@
 
                   <div class="input-group">
 
-                    <input class="form-control" id="ex3" type="text" matInput [matAutocomplete]="auto" [formControl]="queryField" placeholder="Enter stock ticker symbol">
+                    <input class="form-control no-border" id="ex3" type="text" matInput [matAutocomplete]="auto" [formControl]="queryField" placeholder="Enter stock ticker symbol">
                         <div class="input-group-append">
                             <div class="input-group-text bg-transparent icon"  >
                         <fa-icon [icon]="faS" [styles]="{'stroke': '#6f4ffb', 'color': '#6f4ffb'}" pull="right" routerLink="/details/{{ ticker }}"></fa-icon>
+                        <fa-icon [icon]="faT" [styles]="{'stroke': '#6f4ffb', 'color': '#6f4ffb'}" pull="right" routerLink="/details/{{ ticker }}"></fa-icon>
                         <mat-autocomplete #auto="matAutocomplete">
                           
                           <div *ngIf="isLoading">
@@ -38,6 +39,7 @@
                   </div>
                 </div>
               </div>
+              
             
         </div>
         

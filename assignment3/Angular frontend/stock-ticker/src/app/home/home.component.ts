@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, finalize, startWith, switchMap, tap } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
@@ -27,6 +27,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 })
 export class HomeComponent implements OnInit {
   faS = faSearch;
+  faT = faTimes;
   isLoading = false;
   results: any = null;
   queryField: FormControl = new FormControl();

@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
     <div class="row text-center justify-content-center">
         
         <div class="col-12 pt-5 mt-5 mb-3">
@@ -46,4 +46,32 @@
         
     </div>
     
+</div> -->
+<form #searchForm (ngSubmit)="searchTicker($event)">
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm text-center" id="header-text">
+      <h1>STOCK SEARCH</h1>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-6 d-flex align-items-center justify-content-center rounded-pill border-color">
+      <div class="input-group">
+        <input #symbolInput type="text" class="form-control rounded-pill no-border" [(ngModel)]="ticker" matInput [matAutocomplete]="auto" [formControl]="queryField" placeholder="Enter stock ticker symbol">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="40"></mat-spinner></mat-option>
+          <mat-option *ngFor="let result of results" [value]="result" (click)="selectResult(result)">
+            {{result.displaySymbol}} | {{result.description}}
+          </mat-option>
+        </mat-autocomplete>
+        <div class="input-group-append">
+          <div class="input-group-text bg-transparent icon"  >
+            <button type="submit" (click)="searchTicker($event)"><fa-icon [icon]="faS" [styles]="{'stroke': '#2224AD', 'color': '#2224AD'}" routerLink="/details/{{ ticker }}"></fa-icon></button>
+            <button (click)="reset()"><fa-icon [icon]="faT" [styles]="{'stroke': '#2224AD', 'color': '#2224AD'}"></fa-icon></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+</form>

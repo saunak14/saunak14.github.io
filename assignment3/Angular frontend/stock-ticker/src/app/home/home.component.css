@@ -1,4 +1,4 @@
-#title {
+/* #title {
     font-size: 5em;
     font-weight: bolder;
     line-height: 1em;
@@ -26,4 +26,45 @@ input:focus {
     border-radius: 20px;
     border:2px solid #6f4ffb;
     border-left: none;
+} */
+
+.input-group {
+    border-radius: 20px;
+    overflow: hidden;
 }
+.border-color {
+    border: 3px solid var(--primary-color);
+}
+.bi {
+    color: var(--primary-color);
+}
+.no-border {
+    border: none !important;
+}
+.btn-outline-secondary.no-border:hover, .btn-outline-secondary.no-border:focus {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+.form-control.no-border:focus {
+    border-color: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+.icon {
+    border: none;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+}
+
+h1 {
+    padding-top: 50px;
+}
+
+
+
+

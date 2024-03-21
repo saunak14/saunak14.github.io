@@ -1,18 +1,21 @@
-<nav class="navbar sticky-top navbar-inverse navbar-expand-lg">
-    <span class="navbar-brand" (click)="backtoHome()">Stock Search</span>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+  <div class="container-fluid">
+    <div class="navbar-brand">Stock Search</div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="menu-i nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Search</a>
-          </li>
-          <li class="nav-item">
-            <a class="menu-i nav-link" routerLink="/watchlist" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Watchlist</a>
-          </li>
-          <li class="nav-item">
-            <a class="menu-i nav-link" routerLink="/portfolio" routerLinkActive="active" [routerLinkActiveOptions] ="{exact:true}">Portfolio</a>
-          </li>
-        </ul></div>
+    <div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <button type="button" class="btn btn-link text-white text-decoration-none" routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" (click)="backtoHome()">Search</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn btn-link text-white text-decoration-none" routerLink="/watchlist" routerLinkActive="active" (click)="watchlistPage()">Watchlist</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn btn-link text-white text-decoration-none" routerLink="/portfolio" routerLinkActive="active" (click)="portfolioPage()">Portfolio</button>
+        </li>
+      </ul>
+    </div>
+  </div>
 </nav>

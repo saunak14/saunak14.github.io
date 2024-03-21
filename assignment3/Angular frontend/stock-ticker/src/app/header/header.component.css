@@ -1,5 +1,5 @@
 .navbar {
-    background-color: #6f4ffb;
+    background: var(--primary-color);
 }
 .navbar-toggler-icon {
     color: lightgrey;

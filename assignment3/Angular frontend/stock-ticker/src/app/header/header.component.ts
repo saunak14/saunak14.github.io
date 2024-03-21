@@ -1,22 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { Router, RouterLinkActive } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private route: Router) {}
+  constructor(private route: Router, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
     
   }
   backtoHome(){
     this.route.navigate(["/"]);
+  }
+
+  watchlistPage(){
+    this.route.navigate(["/watchlist"]);
+  }
+
+  portfolioPage(){
+    this.route.navigate(["/portfolio"]);
   }
 }

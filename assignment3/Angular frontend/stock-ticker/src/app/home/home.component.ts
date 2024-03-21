@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FormControl } from '@angular/forms';
+import { FormControl, NgForm } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, finalize, startWith, switchMap, tap } from 'rxjs/operators';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -34,8 +34,10 @@ export class HomeComponent implements OnInit {
   query: any;
   ticker: string | undefined;
   data: any;
+  @ViewChild('searchForm')
+  searchForm!: NgForm;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private router:Router) {}
 
   ngOnInit(): void {
     this.queryField.valueChanges.pipe(
@@ -67,5 +69,15 @@ export class HomeComponent implements OnInit {
   selectResult(result: any) {
     this.ticker = result.displaySymbol;
     this.queryField.setValue(result.displaySymbol);
+  }
+
+  searchTicker(event: any){
+    event.preventDefault();
+    event.returnValue = false;
+    this.router.navigate(['/search', this.ticker]);
+  }
+
+  reset() {
+    this.queryField.setValue('');
   }
 }

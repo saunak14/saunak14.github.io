@@ -6,3 +6,7 @@ body { margin: 0; font-family: Roboto, "Sarabun", sans-serif; }
 *:focus {
     outline: none;
 }
+
+:root {
+    --primary-color: #2224AD;
+}

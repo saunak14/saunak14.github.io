@@ -14,6 +14,7 @@ import {faFacebookSquare, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { ApiService } from '../api.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTabsModule} from '@angular/material/tabs';
+import { HomeComponent } from '../home/home.component';
 
 interface NewsData {
   news: News[];
@@ -34,7 +35,7 @@ interface News {
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatTabsModule, HighchartsChartModule, FontAwesomeModule, FormsModule, ReactiveFormsModule],
+  imports: [HomeComponent, CommonModule, MatProgressSpinnerModule, MatTabsModule, HighchartsChartModule, FontAwesomeModule, FormsModule, ReactiveFormsModule],
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.css'
 })

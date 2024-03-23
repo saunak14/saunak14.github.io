@@ -1,0 +1,35 @@
+<form #searchForm>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm text-center" id="header-text">
+          <h1>STOCK SEARCH</h1>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-6 d-flex rounded-pill border-color align-items-center justify-content-center">
+          <div class="input-group">
+            <input #symbolInput type="text" class="form-control rounded-pill no-border" placeholder="Enter stock ticker symbol" [(ngModel)]="ticker" [ngModelOptions]="{standalone: true}" (input)="onTextInput($event)" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+              <mat-option *ngIf="loading && search" class="is-loading"><mat-spinner diameter="50"></mat-spinner></mat-option>
+              <mat-option *ngFor="let option of dropdownOptions" [value]="option.symbol">
+                {{ option.symbol }} | {{ option.description }}
+              </mat-option>
+            </mat-autocomplete>
+            <!-- <button type="submit" class="btn btn-outline-secondary no-border" (click)="onSubmit($event)">
+              <i class="bi bi-search"></i>
+            </button>
+            <button type="reset" class="btn btn-outline-secondary no-border" (click)="reset()">
+              <i class="bi bi-x"></i>
+            </button> -->
+            <div class="input-group-append">
+                <div class="input-group-text bg-transparent icon">
+                  <button type="submit" (click)="onSubmit($event)"><fa-icon [icon]="faS" [styles]="{'stroke': '#2224AD', 'color': '#2224AD'}"></fa-icon></button>
+                  <button (click)="reset()"><fa-icon [icon]="faT" [styles]="{'stroke': '#2224AD', 'color': '#2224AD'}"></fa-icon></button>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <app-search-details [showSearchDetailComponent]="showSearchDetailComponent" [stockData]="stockData" [searchLoading]="searchLoading"></app-search-details>

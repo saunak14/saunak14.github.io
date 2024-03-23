@@ -43,15 +43,14 @@ app.get('/company-historical-data', async (req, res) => {
   const url = polygon_url + polygon_aggregate_bars;
 
   const today = new Date();
-  const sixMonthsAgo = new Date(today);
-  sixMonthsAgo.setMonth(today.getMonth() - 6);
-  sixMonthsAgo.setDate(today.getDate() - 1);
+  const twoYearsAgo = new Date(today);
+  twoYearsAgo.setFullYear(today.getFullYear() - 2);
 
   const todayStr = today.toISOString().slice(0, 10);
-  const sixMonthsAgoStr = sixMonthsAgo.toISOString().slice(0, 10);
+  const twoYearsAgoStr = twoYearsAgo.toISOString().slice(0, 10);
 
   const ticker = req.query;
-  const urlWithParams = `${url}/${ticker.symbol}/range/1/day/${sixMonthsAgoStr}/${todayStr}?adjusted=true&sort=asc&apiKey=${polygon_key}`;
+  const urlWithParams = `${url}/${ticker.symbol}/range/1/day/${twoYearsAgoStr}/${todayStr}?adjusted=true&sort=asc&apiKey=${polygon_key}`;
   console.log(urlWithParams);
 
   try {
@@ -59,7 +58,36 @@ app.get('/company-historical-data', async (req, res) => {
     if (response.status === 200) {
       res.json(response.data);
     } else {
-      res.status(response.status).send('Error fetching data from Finnhub API');
+      res.status(response.status).send('Error fetching data from Polygon API');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/company-historical-data-hourly', async (req, res) => {
+  const polygon_aggregate_bars = "/aggs/ticker";
+  const url = polygon_url + polygon_aggregate_bars;
+
+  const today = new Date();
+
+  const fiveDaysAgo = new Date(today);
+  fiveDaysAgo.setDate(today.getDate() - 5);
+
+  const todayStr = today.toISOString().slice(0, 10);
+  const fiveDaysAgoStr = fiveDaysAgo.toISOString().slice(0, 10);
+
+  const ticker = req.query;
+  const urlWithParams = `${url}/${ticker.symbol}/range/1/hour/${fiveDaysAgoStr}/${todayStr}?adjusted=true&sort=asc&apiKey=${polygon_key}`;
+  console.log(urlWithParams);
+
+  try {
+    const response = await axios.get(urlWithParams);
+    if (response.status === 200) {
+      res.json(response.data);
+    } else {
+      res.status(response.status).send('Error fetching data from Polygon API');
     }
   } catch (error) {
     console.error(error);

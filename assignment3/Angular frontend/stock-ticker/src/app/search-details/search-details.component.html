@@ -1,0 +1,177 @@
+<!-- loading indicator -->
+<div class="container mt-3 d-flex justify-content-center" *ngIf="searchLoading && !showSearchDetailComponent">
+    <mat-spinner diameter="50"></mat-spinner>
+</div>
+<!-- Detail component -->
+<div *ngIf="showSearchDetailComponent">
+    <div class="container mt-3" *ngIf="!showError">
+        <div class="row justify-content-center">
+            <!-- Ticker and Star Button  -->
+            <div class="col text-center" *ngIf="stockData && stockData.description">
+                <div class="d-flex justify-content-center align-items-center">
+                    <!-- Ticker and Star Button -->
+                    <div class="d-flex flex-row justify-content-center align-items-center">
+                        <h1 class="m-0 p-0" style="font-weight: 500;">{{ stockData.description.ticker }}</h1>
+                        <button class="btn-star ms-2">
+                            <i class="fa fa-regular fa-star"></i>
+                        </button>
+                    </div>
+                </div>
+                <h2 class="m-0" style="color:rgb(91, 97, 103);">{{stockData.description.name}}</h2>
+                <div>{{stockData.description.exchange}}</div>
+                <div class="mt-2">
+                    <button (click)="buyStock()" class="btn btn-success shadow-none">Buy</button>
+                    <button (click)="sellStock()" class="btn btn-danger shadow-none">Sell</button>
+                </div>
+            </div>
+            <div class="responsive-square">
+                <img src="{{stockData.description.logo}}" alt="Company Logo">
+            </div>
+            <!-- Quote  -->
+            <div class="col text-center justify-content-center" *ngIf="stockData && stockData.quote">
+                <div *ngIf="stockData.quote.d > 0" style="color: green">
+                    <h1 class="m-0" style="font-weight: 500;">{{stockData.quote.c}}</h1>
+                    <h3 class="m-1" style="font-weight: 400;">▲ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                </div>
+                <div *ngIf="stockData.quote.d < 0" style="color: red">
+                    <h1 class="m-0" style="font-weight: 500;">{{stockData.quote.c}}</h1>
+                    <h3 class="m-1" style="font-weight: 400;">▼ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                </div>
+                <div>{{formattedCurrentTime}}</div>
+            </div>
+        </div>
+        <!-- Market Status-->
+        <div class="text-center font-weight-bold">
+            <p *ngIf="marketOpen" style="color:green; font-weight: bold;">Market is Open</p>
+            <p *ngIf="!marketOpen" style="color:red; font-weight: bold">Market is Closed on {{formattedQuoteTime}}</p>
+        </div>
+    </div>
+    <div class="container mt-4" *ngIf="stockData && !showError">
+        <!-- Nav tabs-->
+        <mat-tab-group mat-align-tabs="center dynamicHeight mat-stretch-tabs">
+            <mat-tab label="Summary">
+                <div class="row">
+                    <!-- Left Portion -->
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-6 text-center mt-4">
+                                <b>High Price:</b> {{stockData.quote.h}}
+                                <br>
+                                <b>Low Price:</b> {{stockData.quote.l}}
+                                <br>
+                                <b>Open Price:</b> {{stockData.quote.o}}
+                                <br>
+                                <b>Prev. Close:</b> {{stockData.quote.pc}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-center mt-5">
+                                <b><u>About the company</u></b>
+                                <br>
+                                <br>
+                                <b>IPO Start Date:</b> {{stockData.description.ipo}}
+                                <br>
+                                <b>Industry:</b> {{stockData.description.finnhubIndustry}}
+                                <br>
+                                <b>Webpage: </b> <a href="{{stockData.description.weburl}}" target="_blank">{{stockData.description.weburl}}</a>
+                                <br>
+                                <b>Company peers:</b>
+                                <br>
+                                <span *ngFor="let peer of stockData.peers">
+                                    <a [routerLink]="['/search', peer]" class="peer-link">{{peer}}</a>,
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Portion -->
+                    <div class="col-md-6 mt-2">
+                        <highcharts-chart 
+                        [Highcharts]="hourlyCharts"
+                        [options]="hourlyOptions"
+                        [constructorType]="hourlyConstructor"
+                        style="width: 100%; height: 400px; display: block;">
+                        </highcharts-chart>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Top News">
+                <div class="row">
+                    <div class="col-md-6 mb-4" *ngFor="let newsItem of newsData" (click)="openModal(newsItem)">
+                        <div class="card news-card d-flex justify-content-center">
+                            <div class="row">
+                                <div class="col-md-4 d-flex justify-content-center">
+                                    <img [src]="newsItem.image" class="card-img my-auto" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-headline text-center">{{newsItem.headline}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Charts">
+                <highcharts-chart 
+                [Highcharts]="chartCharts"
+                [options]="chartOptions"
+                [constructorType]="chartConstructor"
+                style="width: 100%; height: 600px; display: block;">
+                </highcharts-chart>
+            </mat-tab>
+            <mat-tab label="Insights">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 text-center">
+                        <h3>Insider Sentiments</h3>
+                        <table class="table mx-auto" style="table-layout: fixed; width: 100%;">
+                            <tr>
+                                <th>{{stockData.description.name}}</th>
+                                <th>MSPR</th>
+                                <th>Change</th>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>{{MSPR[0]}}</td>
+                                <td>{{CHANGE[0]}}</td>
+                            </tr>
+                            <tr>
+                                <th>Positive</th>
+                                <td>{{MSPR[1]}}</td>
+                                <td>{{CHANGE[1]}}</td>
+                            </tr>
+                            <tr>
+                                <th>Negative</th>
+                                <td>{{MSPR[2]}}</td>
+                                <td>{{CHANGE[2]}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <highcharts-chart 
+                        [Highcharts]="recommendCharts"
+                        [options]="recommendOptions"
+                        style="width: 100%; height: 400px; display: block;">
+                        </highcharts-chart>
+                    </div>
+                    <div class="col-md-6">
+                        <highcharts-chart 
+                        [Highcharts]="surpriseCharts"
+                        [options]="surpriseOptions"
+                        style="width: 100%; height: 400px; display: block;">
+                        </highcharts-chart>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <div *ngIf="showError" class="container mt-5">
+        <div class="alert alert-danger text-center text-dark" role="alert">
+            No data found. Please enter a valid Ticker.
+        </div>
+    </div>
+</div>

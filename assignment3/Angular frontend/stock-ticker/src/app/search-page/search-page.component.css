@@ -1,0 +1,35 @@
+h1 {
+    margin-top: 50px;
+}
+.input-group {
+    border-radius: 20px;
+    overflow: hidden;
+}
+.border-color {
+    border: 3px solid var(--primary-color);
+}
+.bi {
+    color: var(--primary-color);
+}
+.no-border {
+    border: none !important;
+}
+.btn-outline-secondary.no-border:hover, .btn-outline-secondary.no-border:focus {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+.form-control.no-border:focus {
+    border-color: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+}
+
+.input-group .input-group-text {
+    border: none;
+}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { interval } from 'rxjs';
 import * as Highcharts from "highcharts/highstock";
 import { HighchartsChartModule } from 'highcharts-angular';
@@ -61,6 +61,7 @@ export class SearchResultsComponent implements OnInit {
   interval = interval(15000);
   isBuyDisabled = true;
   quantityVal: FormControl = new FormControl();
+  queryField: FormControl = new FormControl();
   totalPrice: any;
   faFace = faFacebookSquare;
   faTwit = faTwitter; 
@@ -98,7 +99,8 @@ export class SearchResultsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private getdata: ApiService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private router:Router
   ) {
       
    }
@@ -352,6 +354,25 @@ export class SearchResultsComponent implements OnInit {
     const seconds = String(now.getSeconds()).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  searchTicker(event: any){
+    event.preventDefault();
+    event.returnValue = false;
+    // Reset flags and data
+  this.detailsLoading = true;
+  this.summaryLoading = true;
+  this.newsLoading = true;
+  this.ddata = null;
+  this.sdata = null;
+    
+    this.router.navigate(['/search', this.ticker], { skipLocationChange: false });
+  }
+
+  selectResult(result: any) {
+    this.ticker = result.displaySymbol;
+    this.queryField.setValue(result.displaySymbol);
+    this.queryField.setValue(this.queryField.value);
   }
   
 

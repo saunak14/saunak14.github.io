@@ -1,23 +1,38 @@
-<!-- loading indicator -->
-<div class="container mt-3 d-flex justify-content-center" *ngIf="searchLoading && !showSearchDetailComponent">
-    <mat-spinner diameter="50"></mat-spinner>
+<div *ngIf="searchLoading && !showSearchDetailComponent" class="container mt-3 d-flex justify-content-center">
+    <mat-spinner diameter="40"></mat-spinner>
 </div>
-<!-- Detail component -->
+
 <div *ngIf="showSearchDetailComponent">
-    <div class="container mt-3" *ngIf="!showError">
+    <div *ngIf="error" class="container mt-5">
+        <div class="alert alert-danger text-dark text-center" role="alert">
+            No data found. Please enter a valid Ticker.
+        </div>
+    </div>
+    <div class="container mt-3" *ngIf="!error">
         <div class="row justify-content-center">
-            <!-- Ticker and Star Button  -->
-            <div class="col text-center" *ngIf="stockData && stockData.description">
+            
+            <div class="col text-center">
                 <div class="d-flex justify-content-center align-items-center">
-                    <!-- Ticker and Star Button -->
+                    
                     <div class="d-flex flex-row justify-content-center align-items-center">
-                        <h1 class="m-0 p-0" style="font-weight: 500;">{{ stockData.description.ticker }}</h1>
-                        <button class="btn-star ms-2">
-                            <i class="fa fa-regular fa-star"></i>
-                        </button>
+                        <h1 class="m-0 p-0 fw-semibold">{{ stockData.description.ticker }}</h1>
+                        <div *ngIf="!isPresentInWishlist">
+                            <button class="btn-star ms-2" (click)="addToWishlist()">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-star" fill="currentColor" xmlns="http://www.w3.org/2000/svg" >
+                                    <path fill-rule="evenodd" d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.523-3.356c.329-.314.158-.888-.283-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767l-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288l1.847-3.658 1.846 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.564.564 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="isPresentInWishlist" (click)="deleteFromWishlist()">
+                            <button class="btn-star ms-2">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-star-fill" fill="#FFDF00" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <h2 class="m-0" style="color:rgb(91, 97, 103);">{{stockData.description.name}}</h2>
+                <h2 class="m-0" style="color:rgb(91, 97, 105);">{{stockData.description.name}}</h2>
                 <div>{{stockData.description.exchange}}</div>
                 <div class="mt-2">
                     <button (click)="buyStock()" class="btn btn-success shadow-none">Buy</button>
@@ -27,31 +42,31 @@
             <div class="responsive-square">
                 <img src="{{stockData.description.logo}}" alt="Company Logo">
             </div>
-            <!-- Quote  -->
+
             <div class="col text-center justify-content-center" *ngIf="stockData && stockData.quote">
-                <div *ngIf="stockData.quote.d > 0" style="color: green">
-                    <h1 class="m-0" style="font-weight: 500;">{{stockData.quote.c}}</h1>
-                    <h3 class="m-1" style="font-weight: 400;">▲ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                <div *ngIf="stockUp" style="color: green">
+                    <h1 class="m-0">{{stockData.quote.c}}</h1>
+                    <h3 class="m-1">▲ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
                 </div>
-                <div *ngIf="stockData.quote.d < 0" style="color: red">
-                    <h1 class="m-0" style="font-weight: 500;">{{stockData.quote.c}}</h1>
-                    <h3 class="m-1" style="font-weight: 400;">▼ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                <div *ngIf="!stockUp" style="color: red">
+                    <h1 class="m-0">{{stockData.quote.c}}</h1>
+                    <h3 class="m-1">▼ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
                 </div>
                 <div>{{formattedCurrentTime}}</div>
             </div>
         </div>
-        <!-- Market Status-->
+        
         <div class="text-center font-weight-bold">
             <p *ngIf="marketOpen" style="color:green; font-weight: bold;">Market is Open</p>
-            <p *ngIf="!marketOpen" style="color:red; font-weight: bold">Market is Closed on {{formattedQuoteTime}}</p>
+            <p *ngIf="!marketOpen" style="color:red; font-weight: bold">Market is Closed on {{formattedMarketCloseTime}}</p>
         </div>
     </div>
-    <div class="container mt-4" *ngIf="stockData && !showError">
-        <!-- Nav tabs-->
+    <div class="container mt-4" *ngIf="stockData && !error">
+        
         <mat-tab-group mat-align-tabs="center dynamicHeight mat-stretch-tabs">
             <mat-tab label="Summary">
                 <div class="row">
-                    <!-- Left Portion -->
+                    
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-6 text-center mt-4">
@@ -77,30 +92,31 @@
                                 <br>
                                 <b>Company peers:</b>
                                 <br>
-                                <span *ngFor="let peer of stockData.peers">
-                                    <a [routerLink]="['/search', peer]" class="peer-link">{{peer}}</a>,
+                                <span *ngFor="let peer of stockData.peers; let last = last">
+                                    <a [routerLink]="['/search', peer]" style="margin-right: 5px;">{{peer}}</a>
+                                    <span *ngIf="!last"> </span>
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <!-- Right Portion -->
+                    
                     <div class="col-md-6 mt-2">
                         <highcharts-chart 
                         [Highcharts]="hourlyCharts"
                         [options]="hourlyOptions"
-                        [constructorType]="hourlyConstructor"
-                        style="width: 100%; height: 400px; display: block;">
+                        [constructorType]="stockChart"
+                        style="display: block; width: 100%; height: 400px;">
                         </highcharts-chart>
                     </div>
                 </div>
             </mat-tab>
             <mat-tab label="Top News">
                 <div class="row">
-                    <div class="col-md-6 mb-4" *ngFor="let newsItem of newsData" (click)="openModal(newsItem)">
-                        <div class="card news-card d-flex justify-content-center">
+                    <div class="col-md-6 mb-4" *ngFor="let newsItem of newsData" (click)="open(newsItem)">
+                        <div class="card news-card d-flex justify-content-center" style="background-color: #f4f4f4;">
                             <div class="row">
                                 <div class="col-md-4 d-flex justify-content-center">
-                                    <img [src]="newsItem.image" class="card-img my-auto" alt="...">
+                                    <img [src]="newsItem.image" class="my-auto card-img" alt="News image">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
@@ -114,41 +130,40 @@
             </mat-tab>
             <mat-tab label="Charts">
                 <highcharts-chart 
-                [Highcharts]="chartCharts"
+                [Highcharts]="chartOfCharts"
                 [options]="chartOptions"
-                [constructorType]="chartConstructor"
-                style="width: 100%; height: 600px; display: block;">
+                [constructorType]="stockChart"
+                style="display: block; width: 100%; height: 600px;">
                 </highcharts-chart>
             </mat-tab>
             <mat-tab label="Insights">
                 <div class="row">
                     <div class="col-md-3"></div>
                     <div class="col-md-6 text-center">
-                        <h3>Insider Sentiments</h3>
+                        <h2 class="fw-semibold">Insider Sentiments</h2>
                         <table class="table mx-auto" style="table-layout: fixed; width: 100%;">
                             <tr>
-                                <th>{{stockData.description.name}}</th>
-                                <th>MSPR</th>
-                                <th>Change</th>
+                                <th><b>{{stockData.description.name}}</b></th>
+                                <th><b>MSPR</b></th>
+                                <th><b>Change</b></th>
                             </tr>
                             <tr>
-                                <th>Total</th>
+                                <th><b>Total</b></th>
                                 <td>{{MSPR[0]}}</td>
                                 <td>{{CHANGE[0]}}</td>
                             </tr>
                             <tr>
-                                <th>Positive</th>
+                                <th><b>Positive</b></th>
                                 <td>{{MSPR[1]}}</td>
                                 <td>{{CHANGE[1]}}</td>
                             </tr>
                             <tr>
-                                <th>Negative</th>
+                                <th><b>Negative</b></th>
                                 <td>{{MSPR[2]}}</td>
                                 <td>{{CHANGE[2]}}</td>
                             </tr>
                         </table>
                     </div>
-                    <div class="col-md-3"></div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -168,10 +183,5 @@
                 </div>
             </mat-tab>
         </mat-tab-group>
-    </div>
-    <div *ngIf="showError" class="container mt-5">
-        <div class="alert alert-danger text-center text-dark" role="alert">
-            No data found. Please enter a valid Ticker.
-        </div>
     </div>
 </div>

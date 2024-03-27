@@ -4,10 +4,45 @@ const cors = require('cors');
 
 const app = express();
 
+app.use(express.json());
+
 const finnhub_url = "https://finnhub.io/api/v1";
 const finnhub_key = "cn5e1r1r01qocjm1mnt0cn5e1r1r01qocjm1mntg";
 const polygon_url = "https://api.polygon.io/v2";
 const polygon_key = "KsY8TN9bNE9j8TKwpWMIGGumRy6ZyQRe";
+
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://saunaksa:assignment3@assignment3.sn67kko.mongodb.net/?retryWrites=true&w=majority&appName=Assignment3";
+const mongoose = require('mongoose');
+mongoose.connect(uri)
+  .then((result) => console.log('connected to db using mongoose'))
+  .catch((err) => console.log(err));
+const Schema = mongoose.Schema;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+
 
 app.use(cors({
   origin: '*'
@@ -252,8 +287,142 @@ app.get('/company-earnings', async (req, res) => {
   }
 });
 
+
+
 // Listen to the App Engine-specified port, or 8080 otherwise
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
+});
+
+const wishlistSchema = new Schema({
+  ticker: String
+});
+
+const portfolioSchema = new Schema({
+  ticker: String,
+  quantity: Number,
+  cost: Number
+});
+
+const WishlistModel = mongoose.model('wishlist', wishlistSchema);
+const PortfolioModel = mongoose.model('portfolio', portfolioSchema);
+
+app.get('/wishlist', (req, res) => {
+  WishlistModel.find()
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json(err);
+    });
+});
+
+app.post('/add-wishlist', (req, res) => {
+  const wishlist = new WishlistModel(req.body);
+
+  wishlist.save()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.post('/delete-wishlist', (req, res) => {
+  WishlistModel.findOne(req.body).deleteOne()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get('/portfolio', (req, res) => {
+  PortfolioModel.find()
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json(err);
+    });
+});
+
+app.post('/add-portfolio', (req, res) => {
+  const portfolio = new PortfolioModel(req.body);
+
+  portfolio.save()
+    .then((result) => {
+      res.status(200).json(result)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+// update favorite
+app.post('/favorites', async (req, res) => {
+  // if favorite already exist, delete it
+  try {
+    const favorite = await WishlistModel.findOne({ ticker: req.body.ticker})
+    if (favorite) {
+      await favorite.deleteOne();
+      res.json({ message: 'Favorite deleted' });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+  // add new favorite
+  const newFavorite = new WishlistModel({ ticker: req.body.ticker, name: req.body.name});
+  try {
+    await newFavorite.save();
+    res.status(201).json(newFavorite);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// update holding
+app.post('/holdings', async (req, res) => {
+  try {
+    let holding = await PortfolioModel.findOne({ticker: req.body.ticker});
+
+    if (holding) {
+      // If holding exists, update it
+      const newQuantity = holding.quantity + req.body.quantity;
+
+      // if new quantity is 0, delete the holding
+      if (newQuantity === 0) {
+        await holding.deleteOne();
+        res.json({ message: 'Holding deleted' });
+        return;
+      }
+
+      const newCost = holding.cost + req.body.cost;
+      
+      holding.quantity = newQuantity;
+      holding.cost = newCost;
+      
+      await holding.save();
+      res.status(200).json(holding);
+    } else {
+      // If holding does not exist, create a new one
+      const newHolding = new PortfolioModel({
+        ticker: req.body.ticker,
+        quantity: req.body.quantity,
+        cost: req.body.cost
+      });
+      await newHolding.save();
+      res.status(201).json(newHolding);
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });

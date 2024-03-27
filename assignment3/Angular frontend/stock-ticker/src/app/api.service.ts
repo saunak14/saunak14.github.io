@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -19,10 +19,20 @@ export class ApiService {
   insiderSentimentURL: string = '/company-insider-sentiment';
   earningsURL: string = '/company-earnings';
 
+  wishlistURL: string = '/wishlist';
+  addWishlistURL: string = '/add-wishlist';
+  deleteWishlistURL: string = '/delete-wishlist';
+
   constructor(private httpClient: HttpClient) { }
 
   get(url: string, params?: HttpParams) {
     return this.httpClient.get<any>(url, { params });
+  }
+
+  post(url: string, body: any) {
+    return this.httpClient.post<any>(url, body, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json')
+    });
   }
 
   search(ticker: string){
@@ -74,5 +84,20 @@ export class ApiService {
     const params = new HttpParams().set('symbol', ticker);
     return this.get(this.host + this.earningsURL, params);
   }
+
+  wishlist() {
+    return this.get(this.host + this.wishlistURL);
+  }
+
+  addWishlist(ticker: string) {
+    const data = { ticker: ticker};
+    return this.post(this.host + this.addWishlistURL, data);
+  }
+
+  deleteWishlist(ticker: string) {
+    const data = { ticker: ticker};
+    return this.post(this.host + this.deleteWishlistURL, data);
+  }
+
 
 }

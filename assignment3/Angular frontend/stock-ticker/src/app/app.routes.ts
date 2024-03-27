@@ -5,8 +5,9 @@ import { SearchDetailsComponent } from './search-details/search-details.componen
 import { SearchPageComponent } from './search-page/search-page.component';
 
 export const routes: Routes = [
+    { path: '', redirectTo: 'search/home', pathMatch: 'full' },
     {
-        path: '',
+        path: 'search/home',
         component: SearchPageComponent
     },
     {path:"search/:ticker", component: SearchPageComponent}

@@ -19,36 +19,38 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NewsData } from '../objects.interface';
 import { NewsCardComponent } from '../news-card/news-card.component';
+import { ApiService } from '../api.service';
+import { faL } from '@fortawesome/free-solid-svg-icons';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-search-details',
   standalone: true,
   imports: [CommonModule,
     RouterLink,
-    MatProgressSpinnerModule,
     HighchartsChartModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     MatDialogModule,
-    MdbTabsModule,
-    MatTabsModule, NewsCardComponent],
+    MatTabsModule, 
+    MdbTabsModule, 
+    NewsCardComponent],
   templateUrl: './search-details.component.html',
   styleUrl: './search-details.component.css'
 })
 export class SearchDetailsComponent {
-  @Input() showSearchDetailComponent: boolean = false;
-  @Input() stockData: any;
   @Input() autoLoading: boolean = true;
   @Input() searchLoading: boolean = false;
+  @Input() showSearchDetailComponent: boolean = false;
+  @Input() stockData: any;
 
-  @ViewChild('modalContent') modalContent!: TemplateRef<any>;
+  error: boolean = false;
 
-  showError: boolean = false;
   hourlyCharts: typeof Highcharts = Highcharts;
-  hourlyConstructor = "stockChart";
+  stockChart = "stockChart";
   hourlyOptions: Highcharts.Options = {};
   newsData: any[] = [];
-  chartCharts: typeof Highcharts = Highcharts;
-  chartConstructor = "stockChart";
+  chartOfCharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {};
   lineColor: string = 'green';
   MSPR: number[] = [];
@@ -57,72 +59,68 @@ export class SearchDetailsComponent {
   recommendOptions: Highcharts.Options = {};
   surpriseCharts: typeof Highcharts = Highcharts;
   surpriseOptions: Highcharts.Options = {};
+
   marketOpen: boolean = true;
+  stockUp: boolean = true;
   currentTime = new Date().getTime();
   formattedCurrentTime = new Date().toLocaleString();
-  formattedQuoteTime = new Date().toLocaleString();
+  formattedMarketCloseTime = new Date().toLocaleString();
 
-  constructor(
-    public dialog: MatDialog,
-    private newsModalService: NgbModal,
-    ) {}
+  isPresentInWishlist: boolean = false;
 
-  // if one of the element in searchResult is empty, show error message
+  @ViewChild('modalContent') modalContent!: TemplateRef<any>;
+
+
+  constructor(public dialog: MatDialog, private newsModalService: NgbModal, private apiService: ApiService) {}
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stockData'] && !changes['stockData'].firstChange) {
-      if (!this.searchLoading){
-        this.validateData();
+      if (!this.searchLoading) {
+        if (this.showErrorPage()){
+          this.error = true;
+        }
       }
       if (this.stockData && !this.searchLoading) {
-        this.prepareMarketStatus();
-        this.prepareHourlyData();
-        this.prepareNewsData();
-        this.prepareChartData();
-        this.prepareInsightsData();
+        this.tab1();
+        this.tab2();
+        this.tab3();
+        this.tab4();
       }
+      this.isInWishlist().subscribe(isInList => {
+        console.log("Stock in Wishlist:", isInList);
+        this.isPresentInWishlist = isInList;
+      });
     }
   }
 
-  prepareMarketStatus() {
-    // if current time is 5 minutes after the quote timestamp, the market is closed, otherwise it is open
-    const quoteTime = this.stockData.quote.t * 1000;
-    const marketCloseTime = new Date(quoteTime).getTime() + 5 * 60 *1000;
-    this.currentTime = new Date().getTime();
-    this.marketOpen = this.currentTime < marketCloseTime;
-
-    let date = new Date(quoteTime);
-    let year = date.getFullYear();
-    let month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 because getMonth() returns month from 0-11
-    let day = date.getDate().toString().padStart(2, '0');
-    let hours = date.getHours().toString().padStart(2, '0');
-    let minutes = date.getMinutes().toString().padStart(2, '0');
-    let seconds = date.getSeconds().toString().padStart(2, '0');
-    
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    this.formattedQuoteTime = formattedDate;
-
-    date = new Date(this.currentTime);
-    year = date.getFullYear();
-    month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 because getMonth() returns month from 0-11
-    day = date.getDate().toString().padStart(2, '0');
-    hours = date.getHours().toString().padStart(2, '0');
-    minutes = date.getMinutes().toString().padStart(2, '0');
-    seconds = date.getSeconds().toString().padStart(2, '0');
-
-    const formattedCurrentTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    this.formattedCurrentTime = formattedCurrentTime;
-    
+  showErrorPage(): boolean {
+    if (this.stockData) {
+      for (let data in this.stockData) {
+        const value = this.stockData[data];
+        if (Array.isArray(value) && this.stockData[data].length === 0 || typeof value === 'object' && Object.keys(value).length === 0) {
+          this.error = true;
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
-  prepareHourlyData() {
-    const data = this.stockData.hourly;
+  tab1() {
+    if (this.hasFiveMinutesElapsed(this.stockData.quote.t)) {
+      this.marketOpen = false;
+    }
+    if(parseFloat(this.stockData.quote.d) < 0) this.stockUp = false;
+    this.stockData.quote.dp = Math.round(parseFloat(this.stockData.quote.dp) * 100) / 100 ;
 
-    // market open: show stock price variation from yesterday to the today
-    // market close: show stock price variation from one day before closing to the date when the market was closed.
-    // get 32 data points for the chart
+    this.formattedMarketCloseTime = this.formatDateFromEpoch(this.stockData.quote.t);
+    this.formattedCurrentTime = this.formattedCurrentDate();
+
+    const chartData = this.stockData.hourly;
     const priceData: [number, number][] = [];
-    for (let i = data.results.length-1; i >=0 ; i--){
-      priceData.unshift([data.results[i].t, data.results[i].c]);
+    // Convert data from API into data that can be read by charts
+    for (let i = chartData.results.length-1; i >=0 ; i--){
+      priceData.unshift([chartData.results[i].t, chartData.results[i].c]);
       if (priceData.length >= 32){
         break;
       }
@@ -142,7 +140,7 @@ export class SearchDetailsComponent {
         enabled: false
       },
       title: {
-        text: data.ticker + ' Hourly Price Variation',
+        text: chartData.ticker + ' Hourly Price Variation',
         style: {
           color: 'gray',
         },
@@ -151,7 +149,7 @@ export class SearchDetailsComponent {
         type: 'datetime',
       },
       series: [{
-        name: data.ticker,
+        name: chartData.ticker,
         data: priceData,
         type: 'line',
       }],
@@ -169,46 +167,21 @@ export class SearchDetailsComponent {
         backgroundColor: '#f4f4f4',
       },
     };
-      
   }
 
-  // check if any element in searchResult is empty
-  private validateData() {
-    this.showError = false;
-    if (this.stockData) {
-      for (let key in this.stockData) {
-        const value = this.stockData[key];
-        if (Array.isArray(value) && value.length === 0) {
-          this.showError = true;
-          console.log("Validate error")
-          return;
-        }
-        if (typeof value === 'object' && Object.keys(value).length === 0) {
-          this.showError = true;
-          console.log("Validate error")
-          return;
-        }
-      }
-    }
-    console.log("No validate error")
-  }
-
-  // open dialog when card is clicked
   openDialog(templateRef: TemplateRef<any>, cardData: any): void {
     const dialogRef = this.dialog.open(templateRef, {
       width: '250px',
-      data: {index: cardData} // Passing the card index or any other relevant data
+      data: {index: cardData}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
     });
   }
 
-  // get first 20 news without null element
-  prepareNewsData() {
+  tab2() {
     const news = this.stockData.news || [];
-    const filteredNewsData = news.filter((newsItem: NewsData) => {
+    const limitNews = news.filter((newsItem: NewsData) => {
         return newsItem.category && 
                newsItem.datetime && 
                newsItem.headline && 
@@ -218,38 +191,33 @@ export class SearchDetailsComponent {
                newsItem.source && 
                newsItem.summary && 
                newsItem.url;
-    }).slice(0, 20); // Keep only the first 20 items
+    }).slice(0, 20);
 
-    this.newsData = filteredNewsData;
+    this.newsData = limitNews;
   }
 
-  // pass news data to modal component
-  openModal(newsItem: NewsData) {
-    const newsModalRef = this.newsModalService.open(NewsCardComponent);
-    newsModalRef.componentInstance.news = newsItem;
-  }
-
-  // prepare chart data
-  prepareChartData() {
+  tab3() {
     const data = this.stockData.history.results;
-    const ohlc = [], volume = [], dataLength = data.length
+    const stockData = [], 
+    volume = [], 
+    dataLength = data.length
     const groupingUnits: [string, number[] | null][] = [
       ['month', [1, 3, 6]], // unit, allowed multiples
       ['year', [1]]
     ];
 
     for (let i = 0; i < dataLength; i += 1) {
-        ohlc.push([
-            data[i].t, // the date
-            data[i].o, // open
-            data[i].h, // high
-            data[i].l, // low
-            data[i].c // close
+        stockData.push([
+            data[i].t,
+            data[i].o,
+            data[i].h,
+            data[i].l,
+            data[i].c
         ]);
 
         volume.push([
-            data[i].t, // the date
-            data[i].v // the volume
+            data[i].t,
+            data[i].v
         ]);
     }
 
@@ -278,7 +246,7 @@ export class SearchDetailsComponent {
               'type': 'all',
               'text': 'All',
           }],
-          selected: 2, // set 6m as default
+          selected: 2,
         },
         title: { text: this.stockData.history.ticker + ' Historical'},
         subtitle: { text: 'With SMA and Volume by Price technical indicators'},
@@ -324,7 +292,7 @@ export class SearchDetailsComponent {
           name: this.stockData.history.ticker,
           id: this.stockData.history.ticker,
           zIndex: 2,
-          data: ohlc
+          data: stockData
       }, {
           type: 'column',
           name: 'Volume',
@@ -358,24 +326,23 @@ export class SearchDetailsComponent {
     }
   }
 
-  prepareInsightsData(){
-    // insider data
+  tab4(){
     let data = this.stockData.insider.data;
-    let mspr = 0, pos = 0, neg = 0;
-    let change = 0, c_pos = 0, c_neg = 0;
+    let pos = 0, neg = 0, mspr = 0;
+    let change_pos = 0, change_neg = 0, change = 0;
     for (let i = 0; i < data.length; i++){
       mspr += data[i].mspr;
       change += data[i].change;
       if (data[i].mspr > 0){
         pos += data[i].mspr;
-        c_pos += data[i].change;
+        change_pos += data[i].change;
       }
       else{
         neg += data[i].mspr;
-        c_neg += data[i].change;
+        change_neg += data[i].change;
       }
       this.MSPR = [Number(mspr.toFixed(2)), Number(pos.toFixed(2)), Number(neg.toFixed(2))];
-      this.CHANGE = [Number(change.toFixed(2)), Number(c_pos.toFixed(2)), Number(c_neg.toFixed(2))]
+      this.CHANGE = [Number(change.toFixed(2)), Number(change_pos.toFixed(2)), Number(change_neg.toFixed(2))]
     }
     // recommend data
     data = this.stockData.trends;
@@ -494,4 +461,66 @@ export class SearchDetailsComponent {
   sellStock(){
 
   }
+
+  open(newsItem: NewsData) {
+    const newsModalRef = this.newsModalService.open(NewsCardComponent);
+    newsModalRef.componentInstance.news = newsItem;
+  }
+
+  hasFiveMinutesElapsed(epochTime: number): boolean {
+    if (!epochTime) {
+      return false; // Handle potential undefined values
+    }
+    const currentTime = new Date().getTime();
+    const fiveMinutesInMilliseconds = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const timeDifference = currentTime - (epochTime * 1000); // Convert epoch to milliseconds first
+  
+    return timeDifference >= fiveMinutesInMilliseconds;
+  }
+  
+
+  formatDateFromEpoch(epochTime: number): string {
+    if (!epochTime) {
+      return ''; // Handle potential undefined values
+    }
+    const date = new Date(epochTime * 1000); // Multiply by 1000 for milliseconds
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Pad month for single digits
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  formattedCurrentDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  isInWishlist(): Observable<boolean> {
+    return this.apiService.wishlist().pipe(
+      map(response => response.some((wishlist: any) => wishlist.ticker === this.stockData.description.ticker))
+    );
+  }
+
+  addToWishlist() {
+    this.apiService.addWishlist(this.stockData.description.ticker).subscribe({});
+    this.isPresentInWishlist = true;
+  }
+
+  deleteFromWishlist() {
+    this.apiService.deleteWishlist(this.stockData.description.ticker).subscribe({});
+    this.isPresentInWishlist = false;
+  }
+
+
 }

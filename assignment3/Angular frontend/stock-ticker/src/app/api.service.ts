@@ -22,6 +22,10 @@ export class ApiService {
   wishlistURL: string = '/wishlist';
   addWishlistURL: string = '/add-wishlist';
   deleteWishlistURL: string = '/delete-wishlist';
+  portfolioURL: string = '/portfolio';
+  updatePortfolioURL: string = '/update-portfolio';
+  moneyURL: string = '/money';
+  updateMoneyURL: string = '/update-money';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -89,8 +93,8 @@ export class ApiService {
     return this.get(this.host + this.wishlistURL);
   }
 
-  addWishlist(ticker: string) {
-    const data = { ticker: ticker};
+  addWishlist(ticker: string, stockName: string) {
+    const data = { ticker: ticker, stockName: stockName};
     return this.post(this.host + this.addWishlistURL, data);
   }
 
@@ -99,5 +103,23 @@ export class ApiService {
     return this.post(this.host + this.deleteWishlistURL, data);
   }
 
+  portfolio() {
+    return this.get(this.host + this.portfolioURL);
+  }
+
+  updatePortfolio(ticker: string, quantity: number, cost: number) {
+    const data = { ticker: ticker, quantity: quantity, cost: cost};
+    return this.post(this.host + this.updatePortfolioURL, data);
+  }
+
+  money() {
+    return this.get(this.host + this.moneyURL);
+  }
+
+  updateMoney(money: number) {
+    const data = { money: money};
+    console.log(data);
+    return this.post(this.host + this.updateMoneyURL, data);
+  }
 
 }

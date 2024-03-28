@@ -16,15 +16,5 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     
   }
-  backtoHome(){
-    this.route.navigate(["/"]);
-  }
-
-  watchlistPage(){
-    this.route.navigate(["/watchlist"]);
-  }
-
-  portfolioPage(){
-    this.route.navigate(["/portfolio"]);
-  }
+  
 }

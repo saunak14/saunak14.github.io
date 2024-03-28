@@ -1,0 +1,29 @@
+<div class="modal-header p-3 fw-semibold">
+    <h2 class="m-0">{{ ticker }}</h2>
+    <button type="button" class="close-button" aria-label="Close" (click)="close()">
+        <i class="fa-solid fa-xmark fa-2xs" id="close-icon"></i>
+    </button>
+</div>
+<hr>
+<div class="modal-body p-4 fw-semibold">
+    Current Price: {{currentPrice}}
+    <br>
+    Money in Wallet: ${{ currentMoney | number:'1.2-2' }}
+    <br>
+    <div class="row align-items-center">
+        <div class="col-auto">
+            Quantity:
+        </div>
+        <div class="col">
+            <input type="number" class="form-control quantity-input" (ngModelChange)="quantityChange($event)" [(ngModel)]="tradeQuantity" min="0">
+        </div>
+    </div>
+    <span *ngIf="isNotEnoughMoney && buy" class="text-danger text-thicker">Not enough money in wallet!</span>
+    <span *ngIf="isNotEnoughStockHolding && !buy" class="text-danger text-thicker">You cannot sell the stocks that you don't have!</span>
+</div>
+<hr>
+<div class="modal-footer p-2 fw-semibold">
+    <div>Total: {{ totalCost | number:'1.2-2' }}</div>
+    <button *ngIf="buy" type="button" class="btn btn-success" (click)="onTradeClick()">Buy</button>
+    <button *ngIf="!buy" type="button" class="btn btn-danger" (click)="onTradeClick()">Sell</button>
+</div>

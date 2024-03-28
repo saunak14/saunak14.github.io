@@ -296,7 +296,8 @@ app.listen(PORT, () => {
 });
 
 const wishlistSchema = new Schema({
-  ticker: String
+  ticker: String,
+  stockName: String
 });
 
 const portfolioSchema = new Schema({
@@ -305,8 +306,14 @@ const portfolioSchema = new Schema({
   cost: Number
 });
 
+const moneySchema = new Schema({
+  money: Number
+});
+
+
 const WishlistModel = mongoose.model('wishlist', wishlistSchema);
 const PortfolioModel = mongoose.model('portfolio', portfolioSchema);
+const MoneyModel = mongoose.model('money', moneySchema);
 
 app.get('/wishlist', (req, res) => {
   WishlistModel.find()
@@ -329,6 +336,7 @@ app.post('/add-wishlist', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).json(err);
     });
 });
 
@@ -340,6 +348,7 @@ app.post('/delete-wishlist', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).json(err);
     });
 });
 
@@ -354,75 +363,68 @@ app.get('/portfolio', (req, res) => {
     });
 });
 
-app.post('/add-portfolio', (req, res) => {
-  const portfolio = new PortfolioModel(req.body);
+app.post('/update-portfolio', (req, res) => {
+  PortfolioModel.findOne({ticker: req.body.ticker})
+    .then((stock) => {
+      if (stock) {
+        let newQuantity = stock.quantity + req.body.quantity;
 
-  portfolio.save()
-    .then((result) => {
-      res.status(200).json(result)
-    })
-    .catch((err) => {
-      console.log(err);
+        if (newQuantity === 0) {
+          stock.deleteOne()
+            .then((result) => {
+              res.status(200).json(result);
+              return;
+            });
+        }
+
+        let newCost = stock.cost + req.body.cost;
+        stock.quantity = newQuantity;
+        stock.cost = newCost;
+        stock.save()
+          .then((result) => {
+            res.status(200).json(result);
+          });
+      }
+      else {
+        const portfolio = new PortfolioModel(req.body);
+
+        portfolio.save()
+          .then((result) => {
+            res.status(200).json(result)
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+          });
+      }
     });
 });
 
-// update favorite
-app.post('/favorites', async (req, res) => {
-  // if favorite already exist, delete it
-  try {
-    const favorite = await WishlistModel.findOne({ ticker: req.body.ticker})
-    if (favorite) {
-      await favorite.deleteOne();
-      res.json({ message: 'Favorite deleted' });
-      return;
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-  // add new favorite
-  const newFavorite = new WishlistModel({ ticker: req.body.ticker, name: req.body.name});
-  try {
-    await newFavorite.save();
-    res.status(201).json(newFavorite);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+app.get('/money', (req, res) => {
+  MoneyModel.find()
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json(err);
+    });
 });
 
-// update holding
-app.post('/holdings', async (req, res) => {
-  try {
-    let holding = await PortfolioModel.findOne({ticker: req.body.ticker});
+app.post('/update-money', (req, res) => {
+  MoneyModel.deleteOne({})
+    .then(() => {
+      const money = new MoneyModel(req.body);
 
-    if (holding) {
-      // If holding exists, update it
-      const newQuantity = holding.quantity + req.body.quantity;
+      money.save()
+        .then((result) => {
+          console.log(result);
+          res.status(200).json(result);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json(err);
+        });
+    })
 
-      // if new quantity is 0, delete the holding
-      if (newQuantity === 0) {
-        await holding.deleteOne();
-        res.json({ message: 'Holding deleted' });
-        return;
-      }
-
-      const newCost = holding.cost + req.body.cost;
-      
-      holding.quantity = newQuantity;
-      holding.cost = newCost;
-      
-      await holding.save();
-      res.status(200).json(holding);
-    } else {
-      // If holding does not exist, create a new one
-      const newHolding = new PortfolioModel({
-        ticker: req.body.ticker,
-        quantity: req.body.quantity,
-        cost: req.body.cost
-      });
-      await newHolding.save();
-      res.status(201).json(newHolding);
-    }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });

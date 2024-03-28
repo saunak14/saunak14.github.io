@@ -35,8 +35,8 @@
                 <h2 class="m-0" style="color:rgb(91, 97, 105);">{{stockData.description.name}}</h2>
                 <div>{{stockData.description.exchange}}</div>
                 <div class="mt-2">
-                    <button (click)="buyStock()" class="btn btn-success shadow-none">Buy</button>
-                    <button (click)="sellStock()" class="btn btn-danger shadow-none">Sell</button>
+                    <button (click)="buy()" class="btn btn-success shadow-none">Buy</button>
+                    <button *ngIf="isInPortfolio" (click)="sell()" class="btn btn-danger shadow-none ms-3">Sell</button>
                 </div>
             </div>
             <div class="responsive-square">

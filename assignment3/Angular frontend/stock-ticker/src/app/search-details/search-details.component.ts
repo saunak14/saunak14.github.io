@@ -22,6 +22,7 @@ import { NewsCardComponent } from '../news-card/news-card.component';
 import { ApiService } from '../api.service';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import { Observable, map } from 'rxjs';
+import { BuyOrSellStockComponent } from '../buy-or-sell-stock/buy-or-sell-stock.component';
 
 @Component({
   selector: 'app-search-details',
@@ -67,6 +68,9 @@ export class SearchDetailsComponent {
   formattedMarketCloseTime = new Date().toLocaleString();
 
   isPresentInWishlist: boolean = false;
+  isInPortfolio: boolean = false;
+  quantity: number = 0;
+  money: number = 0;
 
   @ViewChild('modalContent') modalContent!: TemplateRef<any>;
 
@@ -86,10 +90,13 @@ export class SearchDetailsComponent {
         this.tab3();
         this.tab4();
       }
-      this.isInWishlist().subscribe(isInList => {
-        console.log("Stock in Wishlist:", isInList);
-        this.isPresentInWishlist = isInList;
+
+      this.getPortfolioAndCheckStock().subscribe(data => {
+        this.isInPortfolio = data.isInPortfolio;
+        this.quantity = data.quantity;
       });
+      this.getMoney();
+      
     }
   }
 
@@ -455,12 +462,36 @@ export class SearchDetailsComponent {
       }]
     }
   }
-  buyStock(){
 
+  buy(){
+    this.openBuySellBox(true);
   }
-  sellStock(){
+  sell(){
+    this.openBuySellBox(false);
+  }
 
+  openBuySellBox(toBuy: boolean) {
+    const dialogVar = this.dialog.open(BuyOrSellStockComponent, {
+      width: '375px',
+      data: { 
+        ticker: this.stockData.description.ticker, 
+        isBuying: toBuy,
+        currentPrice: this.stockData.quote.c,
+        quantity: this.quantity,
+        money: this.money
+       }
+    });
+
+    dialogVar.afterClosed().subscribe(result => {
+      console.log('The dialog was closed. Fetching updates.');
+      this.getPortfolioAndCheckStock().subscribe(data => {
+        this.isInPortfolio = data.isInPortfolio;
+        this.quantity = data.quantity;
+      });
+      this.getMoney();
+    });
   }
+
 
   open(newsItem: NewsData) {
     const newsModalRef = this.newsModalService.open(NewsCardComponent);
@@ -513,7 +544,7 @@ export class SearchDetailsComponent {
   }
 
   addToWishlist() {
-    this.apiService.addWishlist(this.stockData.description.ticker).subscribe({});
+    this.apiService.addWishlist(this.stockData.description.ticker, this.stockData.description.name).subscribe({});
     this.isPresentInWishlist = true;
   }
 
@@ -521,6 +552,20 @@ export class SearchDetailsComponent {
     this.apiService.deleteWishlist(this.stockData.description.ticker).subscribe({});
     this.isPresentInWishlist = false;
   }
-
+  
+  getPortfolioAndCheckStock(): Observable<{ isInPortfolio: boolean; quantity: number }> {
+    return this.apiService.portfolio().pipe(
+      map(holdings => ({
+        isInPortfolio: holdings.some((holding: { ticker: any; }) => holding.ticker === this.stockData.description.ticker),
+        quantity: holdings.find((holding: { ticker: any; }) => holding.ticker === this.stockData.description.ticker)?.quantity || 0,
+      }))
+    );
+  }
+  
+  getMoney() {
+    this.apiService.money().subscribe(result => {
+      this.money = result[0].money;
+    });
+  }
 
 }

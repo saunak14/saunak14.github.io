@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { ApiService } from '../api.service';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-watchlist-stocks',
@@ -22,7 +23,8 @@ export class WatchlistStocksComponent implements OnInit {
   wishlistStocks: any[] = [];
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private router: Router
     ) {}
 
   ngOnInit() {
@@ -57,6 +59,10 @@ export class WatchlistStocksComponent implements OnInit {
       this.wishlistStocks = [];
       this.loadWatchlist();
     });
+  }
+
+  searchTicker(ticker: String) {
+    this.router.navigate(['/search', ticker]);
   }
 
 }

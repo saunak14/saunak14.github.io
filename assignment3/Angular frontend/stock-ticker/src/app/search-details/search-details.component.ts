@@ -46,6 +46,9 @@ export class SearchDetailsComponent {
   @Input() stockData: any;
 
   error: boolean = false;
+  addedToWishlist: boolean = false;
+  stockBought: boolean = false;
+  stockSold: boolean = false;
 
   hourlyCharts: typeof Highcharts = Highcharts;
   stockChart = "stockChart";
@@ -90,7 +93,9 @@ export class SearchDetailsComponent {
         this.tab3();
         this.tab4();
       }
-
+      this.isInWishlist().subscribe(isPresentInWishlist => {
+        this.isPresentInWishlist = isPresentInWishlist;
+      });
       this.getPortfolioAndCheckStock().subscribe(data => {
         this.isInPortfolio = data.isInPortfolio;
         this.quantity = data.quantity;
@@ -484,6 +489,18 @@ export class SearchDetailsComponent {
     });
 
     dialogVar.afterClosed().subscribe(result => {
+      if(toBuy) {
+        this.stockBought = true;
+        setTimeout(() => {
+          this.stockBought = false; // Hide the div
+        }, 3000);
+      }
+      else {
+        this.stockSold = true;
+        setTimeout(() => {
+          this.stockSold = false; // Hide the div
+        }, 3000);
+      }
       this.getPortfolioAndCheckStock().subscribe(data => {
         this.isInPortfolio = data.isInPortfolio;
         this.quantity = data.quantity;
@@ -546,6 +563,10 @@ export class SearchDetailsComponent {
   addToWishlist() {
     this.apiService.addWishlist(this.stockData.description.ticker, this.stockData.description.name).subscribe({});
     this.isPresentInWishlist = true;
+    this.addedToWishlist = true;
+    setTimeout(() => {
+      this.addedToWishlist = false;
+    }, 3000);
   }
 
   deleteFromWishlist() {

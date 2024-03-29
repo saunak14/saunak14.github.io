@@ -24,6 +24,17 @@
 <hr>
 <div class="modal-footer p-2 fw-semibold">
     <div>Total: {{ totalCost | number:'1.2-2' }}</div>
-    <button *ngIf="buy" type="button" class="btn btn-success" (click)="onTradeClick()">Buy</button>
-    <button *ngIf="!buy" type="button" class="btn btn-danger" (click)="onTradeClick()">Sell</button>
-</div>
+    <button 
+      type="button" 
+      class="btn btn-success" 
+      [disabled]="tradeQuantity === 0 || isNotEnoughMoney" 
+      (click)="onTradeClick()"
+      *ngIf="buy">Buy</button>
+    <button 
+      type="button" 
+      class="btn btn-danger" 
+      [disabled]="tradeQuantity === 0 || isNotEnoughStockHolding" 
+      (click)="onTradeClick()"
+      *ngIf="!buy">Sell</button>
+  </div>
+  

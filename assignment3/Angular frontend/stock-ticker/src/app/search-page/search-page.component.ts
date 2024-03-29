@@ -185,12 +185,7 @@ export class SearchPageComponent implements OnInit {
   }
 
   
-
-  
-
-  // reset
   reset() {
-    console.log("Resetting search component");
     this.stockData = null;
     this.dropdownOptions = [];
     this.showSearchDetailComponent = false;

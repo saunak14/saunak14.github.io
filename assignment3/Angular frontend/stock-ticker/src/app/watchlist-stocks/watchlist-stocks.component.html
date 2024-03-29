@@ -12,7 +12,7 @@
                         <div class="card shadow-none">
                             <button type="button" class="btn-close justify-content-center mt-2 ms-2 pt-1" aria-label="Close" (click)="deleteFromWishlist(stock.ticker)">
                             </button>
-                            <div class="card-body pt-1">
+                            <div class="card-body pt-1" (click)="searchTicker(stock.ticker)" style="cursor: pointer;">
                                 <div class="row">
                                     <div class="col">
                                         <div class="row">

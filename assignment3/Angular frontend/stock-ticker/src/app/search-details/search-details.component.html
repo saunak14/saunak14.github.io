@@ -9,8 +9,22 @@
         </div>
     </div>
     <div class="container mt-3" *ngIf="!error">
+        <div *ngIf="addedToWishlist" class="mt-5">
+            <div class="alert alert-success text-dark text-center" role="alert">
+                {{ stockData.description.ticker }} added to Watchlist.
+            </div>
+        </div>
+        <div *ngIf="stockBought" class="mt-5">
+            <div class="alert alert-success text-dark text-center" role="alert">
+                {{ stockData.description.ticker }} bought successfully.
+            </div>
+        </div>
+        <div *ngIf="stockSold" class="mt-5">
+            <div class="alert alert-danger text-dark text-center" role="alert">
+                {{ stockData.description.ticker }} sold successfully.
+            </div>
+        </div>
         <div class="row justify-content-center">
-            
             <div class="col text-center">
                 <div class="d-flex justify-content-center align-items-center">
                     
@@ -111,6 +125,7 @@
                 </div>
             </mat-tab>
             <mat-tab label="Top News">
+                <br>
                 <div class="row">
                     <div class="col-md-6 mb-4" *ngFor="let newsItem of newsData" (click)="open(newsItem)">
                         <div class="card news-card d-flex justify-content-center" style="background-color: #f4f4f4;">

@@ -42,15 +42,11 @@ export class StockPortfolioComponent implements OnInit {
           stock.avgcost = stock.cost / stock.quantity;
           stock.change = stock.avgcost - data.c;
           stock.mv = data.c * stock.quantity;
-          console.log(stock.avgcost, stock.change, stock.mv);
           this.portfolioStocks.push(stock);
           this.searchResults.push(data);
         });
       });
-      console.log(this.portfolioStocks);
-      console.log(this.searchResults);
       this.isLoading = false;
-      // this.fetchQuotesForHoldings();
     });
   }
 

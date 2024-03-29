@@ -10,3 +10,8 @@ body { margin: 0; font-family: Roboto, "Sarabun", sans-serif; }
 :root {
     --primary-color: #2224AD;
 }
+
+.container {
+    padding-bottom: 70px;
+}
+

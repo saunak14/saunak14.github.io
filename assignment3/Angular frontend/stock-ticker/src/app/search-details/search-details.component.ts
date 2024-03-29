@@ -474,7 +474,8 @@ export class SearchDetailsComponent {
     const dialogVar = this.dialog.open(BuyOrSellStockComponent, {
       width: '375px',
       data: { 
-        ticker: this.stockData.description.ticker, 
+        ticker: this.stockData.description.ticker,
+        stockName: this.stockData.description.name,
         isBuying: toBuy,
         currentPrice: this.stockData.quote.c,
         quantity: this.quantity,
@@ -483,7 +484,6 @@ export class SearchDetailsComponent {
     });
 
     dialogVar.afterClosed().subscribe(result => {
-      console.log('The dialog was closed. Fetching updates.');
       this.getPortfolioAndCheckStock().subscribe(data => {
         this.isInPortfolio = data.isInPortfolio;
         this.quantity = data.quantity;
@@ -555,9 +555,9 @@ export class SearchDetailsComponent {
   
   getPortfolioAndCheckStock(): Observable<{ isInPortfolio: boolean; quantity: number }> {
     return this.apiService.portfolio().pipe(
-      map(holdings => ({
-        isInPortfolio: holdings.some((holding: { ticker: any; }) => holding.ticker === this.stockData.description.ticker),
-        quantity: holdings.find((holding: { ticker: any; }) => holding.ticker === this.stockData.description.ticker)?.quantity || 0,
+      map(portfolioStocks => ({
+        isInPortfolio: portfolioStocks.some((portfolioStock: { ticker: any; }) => portfolioStock.ticker === this.stockData.description.ticker),
+        quantity: portfolioStocks.find((portfolioStock: { ticker: any; }) => portfolioStock.ticker === this.stockData.description.ticker)?.quantity || 0,
       }))
     );
   }

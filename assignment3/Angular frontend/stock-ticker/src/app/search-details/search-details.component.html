@@ -45,12 +45,12 @@
 
             <div class="col text-center justify-content-center" *ngIf="stockData && stockData.quote">
                 <div *ngIf="stockUp" style="color: green">
-                    <h1 class="m-0">{{stockData.quote.c}}</h1>
-                    <h3 class="m-1">▲ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                    <h1 class="m-0">{{stockData.quote.c | number:'1.2-2'}}</h1>
+                    <h3 class="m-1">▲ {{stockData.quote.d | number:'1.2-2'}}({{stockData.quote.dp}}%)</h3>
                 </div>
                 <div *ngIf="!stockUp" style="color: red">
-                    <h1 class="m-0">{{stockData.quote.c}}</h1>
-                    <h3 class="m-1">▼ {{stockData.quote.d}}({{stockData.quote.dp}}%)</h3>
+                    <h1 class="m-0">{{stockData.quote.c | number:'1.2-2'}}</h1>
+                    <h3 class="m-1">▼ {{stockData.quote.d | number:'1.2-2'}}({{stockData.quote.dp}}%)</h3>
                 </div>
                 <div>{{formattedCurrentTime}}</div>
             </div>

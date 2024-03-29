@@ -21,6 +21,7 @@ export class BuyOrSellStockComponent {
   quantity: number = 0;
   isNotEnoughMoney: boolean = false;
   isNotEnoughStockHolding: boolean = false;
+  stockName: string = '';
 
   tradeQuantity = 0;
   ticker = '';
@@ -32,6 +33,7 @@ export class BuyOrSellStockComponent {
   ) {
     this.currentPrice = data.currentPrice;
     this.currentMoney = data.money;
+    this.stockName = data.stockName;
     this.ticker = data.ticker;
     this.buy = data.isBuying;
     this.quantity = data.quantity;
@@ -46,7 +48,7 @@ export class BuyOrSellStockComponent {
   
   onTradeClick(): void {
     if(this.buy) {
-      this.apiService.updatePortfolio(this.ticker, this.tradeQuantity, this.currentPrice * this.tradeQuantity)
+      this.apiService.updatePortfolio(this.ticker, this.stockName, this.tradeQuantity, this.currentPrice * this.tradeQuantity)
       .subscribe({
         next: (result) => {
           this.apiService.updateMoney(this.currentMoney - this.currentPrice * this.tradeQuantity).subscribe({});
@@ -54,7 +56,7 @@ export class BuyOrSellStockComponent {
         }
       });
     } else {
-      this.apiService.updatePortfolio(this.ticker, -this.tradeQuantity, this.currentPrice * this.tradeQuantity * -1)
+      this.apiService.updatePortfolio(this.ticker, this.stockName, -this.tradeQuantity, this.currentPrice * this.tradeQuantity * -1)
         .subscribe({
           next: (result) => {
             this.apiService.updateMoney(this.currentMoney + this.currentPrice * this.tradeQuantity).subscribe({});

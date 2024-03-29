@@ -107,8 +107,8 @@ export class ApiService {
     return this.get(this.host + this.portfolioURL);
   }
 
-  updatePortfolio(ticker: string, quantity: number, cost: number) {
-    const data = { ticker: ticker, quantity: quantity, cost: cost};
+  updatePortfolio(ticker: string, stockName: string, quantity: number, cost: number) {
+    const data = { ticker: ticker, stockName: stockName, quantity: quantity, cost: cost};
     return this.post(this.host + this.updatePortfolioURL, data);
   }
 

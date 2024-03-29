@@ -302,6 +302,7 @@ const wishlistSchema = new Schema({
 
 const portfolioSchema = new Schema({
   ticker: String,
+  stockName: String,
   quantity: Number,
   cost: Number
 });

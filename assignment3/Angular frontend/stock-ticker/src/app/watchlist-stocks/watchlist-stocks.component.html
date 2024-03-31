@@ -1,4 +1,4 @@
-<div class="container"> 
+<!-- <div class="container"> 
     <div class="row mt-5">
         <div class="col"></div>
         <div class="col-10">
@@ -55,4 +55,54 @@
             </div>
         </div>
     </div>
+</div> -->
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-8">
+            <h1 class="watchlist-header">My Watchlist</h1>
+        </div>
+    </div>
+    <div class="mt-5" *ngIf="loadingIndicator">
+        <div class="d-flex justify-content-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    </div>
+    <div *ngIf="!loadingIndicator">
+        <div class="row justify-content-center">
+            <div *ngFor="let stock of wishlistStocks; let i=index" class="col-12 col-md-8 col-lg-8">
+                <div class="card card-custom mb-3" (click)="searchTicker(stock.ticker)" style="cursor: pointer;">
+                  <div class="card-body">
+                    <div class="d-flex">
+                      <button type="button" class="btn-close" aria-label="Close" (click)="deleteFromWishlist(stock.ticker); $event.stopPropagation();"></button>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="stock-ticker font-weight-bold">{{ stock.ticker }}</div>
+                      </div>
+                      <div class="col-6 text-right">
+                        <div class="stock-price font-weight-bold up" *ngIf="searchResults[i].d > 0">{{searchResults[i].c | number:'1.2-2'}}</div>
+                        <div class="stock-price font-weight-bold down" *ngIf="searchResults[i].d <= 0">{{searchResults[i].c | number:'1.2-2'}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="company-name">{{stock.stockName}}</div>
+                      </div>
+                      <div class="col-6 text-right">
+                        <div class="percent-value up" *ngIf="searchResults[i].d > 0">▲ {{searchResults[i].d | number:'1.2-2'}} ({{searchResults[i].dp | number:'1.2-2'}}%)</div>
+                        <div class="percent-value down" *ngIf="searchResults[i].d < 0">▼ {{searchResults[i].d | number:'1.2-2'}} ({{searchResults[i].dp | number:'1.2-2'}}%)</div>
+                      </div>
+                    </div>
+                  </div>   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="emptyWatchlist" class="text-center"> <div class="row justify-content-center">
+      <div class="alert alert-warning text-dark text-center col-sm-10 col-md-8 col-lg-6" role="alert">
+        Currently you don't have any stock in your watchlist.
+      </div>
+  </div>
+    </div>
+   
 </div>

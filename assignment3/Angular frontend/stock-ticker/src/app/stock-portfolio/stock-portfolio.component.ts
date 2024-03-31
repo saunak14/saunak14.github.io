@@ -4,6 +4,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BuyOrSellStockComponent } from '../buy-or-sell-stock/buy-or-sell-stock.component';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-stock-portfolio',
@@ -18,6 +19,10 @@ export class StockPortfolioComponent implements OnInit {
   emptyPortfolio = false;
   searchResults: any[] = [];
   portfolioStocks: any[] = [];
+  tickerBoughtOrSold: string = '';
+  stockBought: boolean = false;
+  stockSold: boolean = false;
+  
 
   constructor (private apiService: ApiService, public dialog: MatDialog){}
 
@@ -52,6 +57,7 @@ export class StockPortfolioComponent implements OnInit {
 
   buy(ticker: string, stockName: string, currentPrice: number, quantity: number, money: number){
     this.openBuySellBox(true, ticker, stockName, currentPrice, quantity, money);
+
   }
   sell(ticker: string, stockName: string, currentPrice: number, quantity: number, money: number){
     this.openBuySellBox(false, ticker, stockName, currentPrice, quantity, money);
@@ -71,6 +77,19 @@ export class StockPortfolioComponent implements OnInit {
     });
 
     dialogVar.afterClosed().subscribe(result => {
+      this.tickerBoughtOrSold = ticker;
+      if(toBuy) {
+        this.stockBought = true;
+        setTimeout(() => {
+          this.stockBought = false; // Hide the div
+        }, 3000);
+      }
+      else {
+        this.stockSold = true;
+        setTimeout(() => {
+          this.stockSold = false; // Hide the div
+        }, 3000);
+      }
       this.searchResults = [];
       this.portfolioStocks = [];
       this.fetchHoldings();

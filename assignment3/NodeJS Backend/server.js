@@ -1,10 +1,29 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const path = require(`path`);
 
 const app = express();
 
+// Serve static files from the dist directory
+// Set MIME type for JavaScript files
+    app.use(express.static(path.join(__dirname, './dist/stock-ticker/browser'), {
+      setHeaders: (res, path, stat) => {  
+          if (path.endsWith('.js')) {
+          res.set('Content-Type', 'application/javascript');
+          }
+      }
+      }));
 app.use(express.json());
+app.use(cors({
+  origin: '*'
+}));
+
+// Listen to the App Engine-specified port, or 8080 otherwise
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}...`);
+});
 
 const finnhub_url = "https://finnhub.io/api/v1";
 const finnhub_key = "cn5e1r1r01qocjm1mnt0cn5e1r1r01qocjm1mntg";
@@ -42,11 +61,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-app.use(cors({
-  origin: '*'
-}));
 
 app.get('/', (req, res) => {
   res.send('Hello from App Engine!');
@@ -288,13 +302,6 @@ app.get('/company-earnings', async (req, res) => {
 });
 
 
-
-// Listen to the App Engine-specified port, or 8080 otherwise
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}...`);
-});
-
 const wishlistSchema = new Schema({
   ticker: String,
   stockName: String
@@ -429,3 +436,7 @@ app.post('/update-money', (req, res) => {
     })
 
 });
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './dist/stock-ticker/browser/index.html'));
+  });

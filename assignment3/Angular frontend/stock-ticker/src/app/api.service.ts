@@ -6,7 +6,8 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
-  host: string = 'http://localhost:8080';
+  // host: string = 'http://localhost:8080';
+  host: string = '';
 
   autcompleteURL: string = '/company-autocomplete';
   chartTwoYearDailyDataURL: string = '/company-historical-data';

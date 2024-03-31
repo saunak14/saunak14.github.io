@@ -4,7 +4,6 @@
         <i class="fa-solid fa-xmark fa-2xs" id="close-icon"></i>
     </button>
 </div>
-<hr>
 <div class="modal-body p-4 fw-semibold">
     Current Price: {{currentPrice}}
     <br>
@@ -21,7 +20,6 @@
     <span *ngIf="isNotEnoughMoney && buy" class="text-danger text-thicker">Not enough money in wallet!</span>
     <span *ngIf="isNotEnoughStockHolding && !buy" class="text-danger text-thicker">You cannot sell the stocks that you don't have!</span>
 </div>
-<hr>
 <div class="modal-footer p-2 fw-semibold">
     <div>Total: {{ totalCost | number:'1.2-2' }}</div>
     <button 

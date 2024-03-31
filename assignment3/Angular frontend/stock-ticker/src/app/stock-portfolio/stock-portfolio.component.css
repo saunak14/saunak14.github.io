@@ -1,0 +1,37 @@
+.card-header {
+    background-color: #a8acb0;  
+    color: white;
+  }
+  
+  .card-footer {
+    background-color: white;
+    border-top: 0;
+  }
+  
+  .card-deck .card {
+    margin-bottom: 20px; /* Spacing between cards */
+  }
+  
+  .btn-success {
+    margin-right: 10px; /* Spacing between buttons */
+  }
+  
+  .success{
+    color:green;
+  }
+  
+  .danger {
+    color:red;
+  }
+
+  .stock-info .key {
+    display: inline-block;
+    margin-right: 10px; /* Or any spacing you prefer */
+    min-width: 150px; /* Adjust this to ensure alignment */
+    text-align: right; /* Align the key text to the right */
+  }
+  
+  .stock-info .value {
+    display: inline-block;
+  }
+  

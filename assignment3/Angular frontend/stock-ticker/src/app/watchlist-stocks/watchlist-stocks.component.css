@@ -1,0 +1,60 @@
+.watchlist-header, .card-custom {
+    padding-left: 0; /* Adjust this value as needed */
+    padding-right: 0; /* Adjust this value as needed */
+  }
+  
+  /* Ensure that this class removes any additional padding or margin that might cause misalignment */
+  .btn-close {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .card-container {
+    max-width: 800px; 
+    margin: 20px auto;
+  }
+
+  .card-custom {
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+  }
+  
+  .stock-ticker {
+    font-size: 1.5em;
+  }
+  
+  .stock-price {
+    font-size: 1.5em;
+    color: #333; /* Or any color you prefer */
+  }
+  
+  .company-name {
+    font-size: 0.85em;
+    color: #666; /* Or any color you prefer */
+  }
+  
+  .percent-value {
+    font-size: 0.85em;
+    /* color will be set by the text-danger class */
+  }
+ 
+   
+  .btn-close {
+    font-size: 8px;
+    margin-bottom: 1.2%;
+    border: none;
+    color: #000;
+  }
+
+  .up{
+    color: green;
+}
+ .down{
+    color: red;
+}
+
+.no-watchlist{
+  background-color:#FEF4CD;
+  border-radius: 2px;
+  font-size: small;
+}
